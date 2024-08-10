@@ -1,5 +1,7 @@
 # AI Customer Support
 
+> This repository has been archived in favor of the new [AI Customer Support](https://github.com/jorgeandrespadilla/customer-support-app) repository and will no longer be maintained. The new repository is a complete rewrite of the application using React, TypeScript and Tailwind CSS.
+
 This project is an AI-powered customer support application that provides a Support Assistant that can handle a wide range of queries and provide relevant information to users. The project uses Next.js as the frontend framework, Material UI for the UI components and OpenAI's GPT models to provide responsive and intelligent support to users.
 
 ## Getting Started
