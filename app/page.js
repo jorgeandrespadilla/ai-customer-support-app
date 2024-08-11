@@ -11,17 +11,19 @@ export default function Home() {
     },
   ])
   const [message, setMessage] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
 
   const sendMessage = async () => {
-    if (!message.trim()) return;  // Don't send empty messages
-  
+    if (!message.trim() || isLoading) return; // Don't send empty messages
+    setIsLoading(true)
+
     setMessage('')
     setMessages((messages) => [
       ...messages,
       { role: 'user', content: message },
       { role: 'assistant', content: '' },
     ])
-  
+
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
@@ -30,14 +32,14 @@ export default function Home() {
         },
         body: JSON.stringify([...messages, { role: 'user', content: message }]),
       })
-  
+
       if (!response.ok) {
         throw new Error('Network response was not ok')
       }
-  
+
       const reader = res.body.getReader()  // Get a reader to read the response body
       const decoder = new TextDecoder()  // Create a decoder to decode the response text
-  
+
       // Process the text from the response
       while (true) {
         const { done, value } = await reader.read()
@@ -59,8 +61,27 @@ export default function Home() {
         { role: 'assistant', content: "I'm sorry, but I encountered an error. Please try again later." },
       ])
     }
+
+    setIsLoading(false)
   }
-  
+
+  const handleKeyPress = (event) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault()
+      sendMessage()
+    }
+  }
+
+  const messagesEndRef = useRef(null)
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [messages])
+
   return (
     <Box
       width="100vw"
@@ -107,6 +128,7 @@ export default function Home() {
               </Box>
             </Box>
           ))}
+          <div ref={messagesEndRef} />
         </Stack>
         <Stack direction={'row'} spacing={2}>
           <TextField
@@ -114,9 +136,15 @@ export default function Home() {
             fullWidth
             value={message}
             onChange={(e) => setMessage(e.target.value)}
+            onKeyDown={handleKeyPress}
+            disabled={isLoading}
           />
-          <Button variant="contained" onClick={sendMessage}>
-            Send
+          <Button
+            variant="contained"
+            onClick={sendMessage}
+            disabled={isLoading}
+          >
+            {isLoading ? 'Sending...' : 'Send'}
           </Button>
         </Stack>
       </Stack>
