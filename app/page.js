@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Box, Button, Stack, TextField } from '@mui/material'
 
 export default function Home() {
@@ -37,7 +37,7 @@ export default function Home() {
         throw new Error('Network response was not ok')
       }
 
-      const reader = res.body.getReader()  // Get a reader to read the response body
+      const reader = response.body.getReader()  // Get a reader to read the response body
       const decoder = new TextDecoder()  // Create a decoder to decode the response text
 
       // Process the text from the response
